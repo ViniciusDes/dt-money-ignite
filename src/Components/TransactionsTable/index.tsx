@@ -1,16 +1,34 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { AxiosResponse } from "axios";
 import { api } from "../../services/api";
 import { Container } from "./styles";
 
+interface ITransaction {
+  id: number;
+  title: string;
+  type: string;
+  category: string;
+  amount: number;
+  createdAt: string;
+}
+
+interface ITransactionResponse {
+  transactions: Array<ITransaction> | null;
+}
+
 export function TransactionsTable() {
+  const [transactions, setTransactions] = useState<ITransaction[]>([]);
   useEffect(() => {
     getData();
   }, []);
 
   async function getData() {
-    const res: AxiosResponse = await api.get("/transactions");
-    console.log(res.data);
+    const res: AxiosResponse<ITransactionResponse | any> = await api.get(
+      "/transactions"
+    );
+    const { transactions } = res.data;
+    console.log(transactions);
+    setTransactions(transactions);
   }
 
   return (
@@ -25,18 +43,14 @@ export function TransactionsTable() {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Desenvolvimento app</td>
-            <td className="deposit">R$13.200</td>
-            <td>Trabalho</td>
-            <td>12/11/2009</td>
-          </tr>
-          <tr>
-            <td>Aluguel</td>
-            <td className="withdrow">- R$1.200</td>
-            <td>Moradia</td>
-            <td>19/11/2009</td>
-          </tr>
+          {transactions.map((transaction) => (
+            <tr key={transaction.id}>
+              <td>{transaction.title}</td>
+              <td className={transaction.type}>R$ {transaction.amount}</td>
+              <td>{transaction.category}</td>
+              <td>{transaction.createdAt}</td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </Container>
