@@ -25,13 +25,14 @@ export function NewTransactionModal({
     ev.preventDefault();
 
     const data = {
+      id: Math.random(),
       title,
       value,
       category,
       type,
     };
 
-    const res = api.post("/transactions", data);
+     api.post("/transactions", data);
   }
 
   return (
