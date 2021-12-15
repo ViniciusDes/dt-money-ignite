@@ -1,35 +1,8 @@
-import { useEffect, useState } from "react";
-import { AxiosResponse } from "axios";
-import { api } from "../../services/api";
+import { useTransactions } from "../../Hooks/useTransactions";
 import { Container } from "./styles";
 
-interface ITransaction {
-  id: number;
-  title: string;
-  type: string;
-  category: string;
-  amount: number;
-  createdAt: string;
-}
-
-interface ITransactionResponse {
-  transactions: Array<ITransaction> | null;
-}
-
 export function TransactionsTable() {
-  const [transactions, setTransactions] = useState<ITransaction[]>([]);
-  useEffect(() => {
-    getData();
-  }, []);
-
-  async function getData() {
-    const res: AxiosResponse<ITransactionResponse | any> = await api.get(
-      "/transactions"
-    );
-    const { transactions } = res.data;
-    console.log(transactions);
-    setTransactions(transactions);
-  }
+  const { transactions } = useTransactions();
 
   return (
     <Container>
@@ -46,15 +19,19 @@ export function TransactionsTable() {
           {transactions.map((transaction) => (
             <tr key={transaction.id}>
               <td>{transaction.title}</td>
-              <td className={transaction.type}>R$
-              
-              {new Intl.NumberFormat('pt-BR', {
-                style:'currency',
-                currency: 'BRL'
-              }).format(transaction.amount)}
+              <td className={transaction.type}>
+                {new Intl.NumberFormat("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                }).format(transaction.amount)}
               </td>
               <td>{transaction.category}</td>
-              <td> {new Intl.DateTimeFormat('pt-BR').format(new Date(transaction.createdAt))}</td>
+              <td>
+                {" "}
+                {new Intl.DateTimeFormat("pt-BR").format(
+                  new Date(transaction.createdAt)
+                )}
+              </td>
             </tr>
           ))}
         </tbody>
